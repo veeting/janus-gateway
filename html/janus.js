@@ -1888,14 +1888,30 @@ function Janus(gatewayCallbacks) {
 					break;
 				}
 			}
-		}
-		if(RTCRtpSender && (RTCRtpSender.prototype.createEncodedStreams ||
+			if(RTCRtpSender && (RTCRtpSender.prototype.createEncodedStreams ||
 				(RTCRtpSender.prototype.createEncodedAudioStreams &&
 				RTCRtpSender.prototype.createEncodedVideoStreams)) && insertableStreams) {
-			config.insertableStreams = true;
-			pc_config.forceEncodedAudioInsertableStreams = true;
-			pc_config.forceEncodedVideoInsertableStreams = true;
-			pc_config.encodedInsertableStreams = true;
+				config.e2eeEnabled = true;
+				pc_config.forceEncodedAudioInsertableStreams = true;
+				pc_config.forceEncodedVideoInsertableStreams = true;
+				pc_config.encodedInsertableStreams = true;
+			}
+		}
+		// Configure peer connection so external transforms methods can be inserted
+		if(callbacks.insertableStreamsEnabled) {
+
+			if(RTCRtpSender && (RTCRtpSender.prototype.createEncodedStreams ||
+				(RTCRtpSender.prototype.createEncodedAudioStreams &&
+				RTCRtpSender.prototype.createEncodedVideoStreams))) {
+				pc_config.forceEncodedAudioInsertableStreams = true;
+				pc_config.forceEncodedVideoInsertableStreams = true;
+				pc_config.encodedInsertableStreams = true;
+
+			}
+		}
+		// Mark this context as being e2ee for janus signaling
+		if(callbacks.e2eeEnabled) {
+			config.e2eeEnabled = true;
 		}
 		Janus.log('Creating PeerConnection');
 		config.pc = new RTCPeerConnection(pc_config);
@@ -2186,7 +2202,7 @@ function Janus(gatewayCallbacks) {
 			return null;
 		}
 		// If transforms are present, notify Janus that the media is end-to-end encrypted
-		if(config.insertableStreams)
+		if(config.e2eeEnabled)
 			offer.e2ee = true;
 		return offer;
 	}
@@ -2223,7 +2239,7 @@ function Janus(gatewayCallbacks) {
 			return null;
 		}
 		// If transforms are present, notify Janus that the media is end-to-end encrypted
-		if(config.insertableStreams)
+		if(config.e2eeEnabled)
 			answer.e2ee = true;
 		return answer;
 	}
@@ -3170,7 +3186,7 @@ function Janus(gatewayCallbacks) {
 			config.iceDone = false;
 			config.dataChannel = {};
 			config.dtmfSender = null;
-			config.insertableStreams = false;
+			config.e2eeEnabled = false;
 		}
 		pluginHandle.oncleanup();
 	}

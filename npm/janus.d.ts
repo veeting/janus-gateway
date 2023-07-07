@@ -170,6 +170,8 @@ declare namespace JanusJS {
 		tracks?: TrackOption[];
 		trickle?: boolean;
 		iceRestart?: boolean;
+		insertableStreamsEnabled?: boolean;
+		e2eeEnabled?: boolean;
 		success?: (jsep: JSEP) => void;
 		error?: (error: Error) => void;
 		customizeSdp?: (jsep: JSEP) => void;
@@ -247,13 +249,16 @@ declare namespace JanusJS {
 		};
 
 		sdpSent: boolean,
-		insertableStreams?: any,
+
+		e2eeEnabled?: boolean,
 		candidates: RTCIceCandidateInit[],
 	}
 
 	type PluginCreateAnswerParam = {
 		jsep: JSEP;
 		tracks?: TrackOption[];
+		insertableStreamsEnabled?: boolean;
+		e2eeEnabled?: boolean;
 
 		/** @deprecated use tracks instead */
 		media?: { audioSend: any, videoSend: any };
